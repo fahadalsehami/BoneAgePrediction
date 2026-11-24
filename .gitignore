@@ -1,0 +1,14 @@
+# Local data and outputs
+MyData/
+dataset/
+output/
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store

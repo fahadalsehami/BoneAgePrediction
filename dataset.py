@@ -4,17 +4,17 @@
 
 # Library required for the 1st version of the bone age estimate project:
 from settings import config
+from settings.files import list_images
 import shutil
 import os
-from imutils import paths
 
 
 # split-loop over the data
 for split in (config.TRAIN_FOLDER, config.TESTING_FOLDER, config.VALIDATION):
 	# grab all image paths in the current split
-	print("[Now dataset is processing '{} split'...".format(split))
+	print("processing the '{}' split...".format(split))
 	p = os.path.sep.join([config.PARENT_DATASET, split])
-	imagePaths = list(paths.list_images(p))
+	imagePaths = list(list_images(p))
 
 	# loop over the image route
 	for imagePath in imagePaths:
@@ -26,9 +26,10 @@ for split in (config.TRAIN_FOLDER, config.TESTING_FOLDER, config.VALIDATION):
 		dirPath = os.path.sep.join([config.PRIMARY_ROUT, split, label])
 
 		# create output in case we have not yet
-		if not os.path.exists(dirPath):
-			os.makedirs(dirPath)
+		os.makedirs(dirPath, exist_ok=True)
 
 		# construct and copy the route to the output image files
 		p = os.path.sep.join([dirPath, filename])
 		shutil.copy2(imagePath, p)
+
+	print("copied {} images".format(len(imagePaths)))
