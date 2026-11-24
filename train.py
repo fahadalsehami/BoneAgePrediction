@@ -22,7 +22,7 @@ def load_and_split(splitingRout):
 	for row in open(splitingRout):
 		# extract the class label and features from the row
 		row = row.strip().split(",")
-		label = row[0]
+		label = int(row[0])
 		features = np.array(row[1:], dtype="float")
 
 		# update the data and label lists
@@ -48,20 +48,21 @@ print("Scan dataset loading...")
 (testX, testY) = load_and_split(testingRout)
 
 # Local the label encoder
-le = pickle.loads(open(config.LABEL_ROUT, "rb").read())
+with open(config.LABEL_ROUT, "rb") as f:
+	le = pickle.loads(f.read())
 
 # building training model
 print("Training has been started....")
-model = LogisticRegression(solver="lbfgs", multi_class="auto")
+model = LogisticRegression(solver="lbfgs", max_iter=1000)
 model.fit(trainX, trainY)
 
 # building evaluating model
 print("Evaulation has been started....")
 pred = model.predict(testX)
-print(classification_report(testY, pred, target_names=le.classes_))
+print(classification_report(testY, pred, labels=list(range(len(le.classes_))),
+	target_names=le.classes_, zero_division=0))
 
 # Serialize the model to the local disk
 print("Saving The Model ..")
-f = open(config.MODEL_PATH, "wb")
-f.write(pickle.dumps(model))
-f.close()
+with open(config.MODEL_ROUT, "wb") as f:
+	f.write(pickle.dumps(model))
